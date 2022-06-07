@@ -1,0 +1,6 @@
+{
+  "api": {
+    "uri": "http://<HUE_BRIDGE_IP>>/api",
+    "user": "<HUE_API_USERNAME>"
+  }
+}
