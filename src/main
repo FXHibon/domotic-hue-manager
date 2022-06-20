@@ -1,0 +1,53 @@
+#!/bin/zsh
+
+source ./src/functions
+
+source ./src/constants
+
+if [ ! -f "$CONFIGURATION_PATH" ]; then
+  error $LINENO "Invalid configuration path '$CONFIGURATION_PATH': File not found"
+  exit 1
+fi
+
+unparsed_configuration=$(cat $CONFIGURATION_PATH)
+
+API_URI=$(echo $unparsed_configuration | jq -r ".api.uri")
+API_USER=$(echo $unparsed_configuration | jq -r ".api.user")
+
+non_empty_or_exit $LINENO $API_URI '.api.uri'
+non_empty_or_exit $LINENO $API_USER '.api.user'
+unset unparsed_configuration
+
+info $LINENO 'Configuration validated:'
+info $LINENO "API URI:\t$API_URI"
+info $LINENO "API USER:\t$API_USER"
+
+# validate credentials
+user_query="$API_URI/$API_USER"
+response=$(curl --silent --write-out "\n%{http_code}" $user_query)
+
+# only the last line, that contains the response code
+code=$(echo $response | tail -1)
+# all but last line, to get the response payload
+body=$(echo $response | sed '$d')
+# optional error
+error=$(echo $body | jq -r ".[].error.description | select(. != null)")
+
+if [ "$code" != '200' ] || [ "$error" != '' ]; then
+  error $LINENO "Unable to access the API with current credentials."
+  error $LINENO "Reported error is: $error"
+  error $LINENO "Details: GET $user_query returned code=$code body=$body"
+  exit 1
+else
+  echo $body | jq >"$API_USER.json"
+  info $LINENO "Refreshed Hue configuration dumped in './$API_USER.json'"
+fi
+
+rooms=$(cat "./$API_USER.json" | jq --compact-output ".groups | .[] | select(.type == \"Room\") | {name: .name, state: .state.all_on}")
+
+debug $LINENO $(echo $rooms | wc -l)
+
+info $LINENO "Found $(echo $rooms | wc -l) rooms:"
+echo $rooms | while read room; do
+  info $LINENO "name=$(echo $room | jq -r ".name")\ton=$(echo $room | jq -r ".state")"
+done
