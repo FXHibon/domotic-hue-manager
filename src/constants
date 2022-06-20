@@ -1,0 +1,5 @@
+#!/bin/zsh
+
+LOG_LEVEL=${LOG_LEVEL:-'INFO'}
+CONFIGURATION_PATH=${1:-"auth.json"}
+SCRIPT_NAME=$(basename $0)
