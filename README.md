@@ -2,22 +2,22 @@
 
 ## What will I find in this repo?
 A CLI to interact with the [Philips Hue API](https://developers.meethue.com/develop/get-started-2/).
-This is just a pretext to play with different tools like zsh script, jq, REST APIs etc...
+This is just a pretext to play with different tools like ~~zsh script, jq~~, Go, REST APIs etc...
 
 
-## What will I need to run it?
+## ~~What will I need to run it?~~
   - [jq](https://stedolan.github.io/jq/)
   - [curl](https://curl.se/)
   - [zsh](https://ohmyz.sh/)
 
-## How can I run it?
+## ~~How can I run it?~~
 
 ```shell
 git clone git@github.com:FXHibon/domotic-hue-manager.git
 cd ./domotic-hue-manager
 
 # you'll need value correctly the 2 required fields in this json
-cp auth.json.dist auth.json
+cp .credentials.json.dist .credentials.json
 
 chmod u+x ./hue-manager
 
@@ -35,6 +35,7 @@ Well, there is a lot of things to be done obviously:
   - Yes I know that there is already a workflow for this, but it depends on python2 and I really don't want to downgrade my python installation from version 3 to 2, which is the current recommanded solution (https://www.alfredapp.com/help/kb/python-2-monterey/)
 - [ ] Refactorize the code in small functions
 - [ ] Add tests
+- [ ] migrate to [golang](https://go.dev/) => work in progress
 
 ## Resources
 - [https://github.com/benknight/hue-alfred-workflow](https://github.com/benknight/hue-alfred-workflow)
